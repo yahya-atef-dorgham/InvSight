@@ -1,0 +1,41 @@
+.stock-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-ok .status-dot {
+  background: #10b981;
+}
+
+.status-warning .status-dot {
+  background: #f59e0b;
+}
+
+.status-low .status-dot {
+  background: #ef4444;
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-ok .status-text {
+  color: #10b981;
+}
+
+.status-warning .status-text {
+  color: #f59e0b;
+}
+
+.status-low .status-text {
+  color: #ef4444;
+}

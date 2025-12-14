@@ -1,0 +1,18 @@
+# Web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Speech processing
+# Note: Web Speech API used on frontend, these for server-side processing if needed
+# google-cloud-speech==2.23.0
+# google-cloud-texttospeech==2.14.2
+# openai-whisper (if using local model)
+
+# NLP
+# transformers==4.35.2 (for intent classification)
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+

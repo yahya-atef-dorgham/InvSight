@@ -95,16 +95,25 @@ Warehouse Staff and Inventory Managers need to ask inventory-related questions u
 
 ### Edge Cases
 
-- What happens when multiple users try to record movements for the same product simultaneously?
-- How does the system handle negative inventory scenarios (stock goes below zero)?
-- What happens when AI recommendations conflict with manual overrides?
-- How does the system handle voice queries when network connectivity is poor?
-- What happens when a warehouse reaches capacity and cannot accept more inventory?
-- How does the system handle supplier data inconsistencies when creating purchase orders?
-- What happens when AI forecasting models need to be updated or retrained?
-- How does the system handle voice input in noisy warehouse environments?
-- What happens when purchase orders are approved but suppliers cannot fulfill them?
-- How does the system handle inventory movements during system maintenance windows?
+- **Concurrent inventory movements for the same product**: System MUST handle concurrent movements using optimistic locking or transaction isolation. When conflicts occur, the system MUST queue subsequent movements and process them sequentially, notifying users if their movement was delayed due to a concurrent update. The audit trail MUST record all attempted movements with timestamps.
+
+- **Negative inventory scenarios**: System MUST prevent negative inventory for outbound movements by validating available stock before processing. If an attempt is made to ship more than available, the system MUST reject the movement and alert the user with available quantity. System MUST support negative inventory tracking as a configurable option for specific business scenarios (e.g., backorders), with clear indicators in the UI.
+
+- **AI recommendations conflicting with manual overrides**: System MUST allow users to manually override AI recommendations at any time. When a manual override conflicts with an AI recommendation, the system MUST retain both the AI recommendation and the manual decision in the audit trail. System MUST allow users to view override history and revert to AI recommendations if needed. System MUST not regenerate conflicting recommendations until manual override is explicitly removed.
+
+- **Voice queries with poor network connectivity**: System MUST detect network connectivity issues and automatically switch to offline mode for voice queries. In offline mode, the system MUST queue voice queries locally and process them when connectivity is restored. System MUST provide clear feedback to users about connectivity status and fallback to text input when voice processing cannot complete. System MUST cache frequently accessed inventory data locally to support basic queries offline.
+
+- **Warehouse capacity exceeded**: System MUST track warehouse capacity constraints and validate available capacity before accepting inbound movements or transfers. When capacity is reached or exceeded, the system MUST reject the movement and alert users with available capacity information. System MUST suggest alternative warehouses with available capacity. System MUST provide capacity alerts when warehouse utilization exceeds configurable thresholds (e.g., 80% capacity).
+
+- **Supplier data inconsistencies in purchase orders**: System MUST validate supplier information before allowing purchase order creation. When inconsistencies are detected (e.g., missing contact information, invalid payment terms), the system MUST flag the purchase order for review and require data correction before approval. System MUST maintain data validation rules and allow administrators to configure required supplier information fields. System MUST log all validation failures for audit purposes.
+
+- **AI forecasting model updates or retraining**: System MUST support versioning of AI forecasting models to allow rollback if new models perform poorly. When models are updated, the system MUST maintain historical forecasts from previous model versions for comparison. System MUST provide a staging environment for testing new models before production deployment. System MUST notify administrators when model updates occur and allow manual approval before activation. System MUST continue serving forecasts using the previous model version if new model deployment fails.
+
+- **Voice input in noisy warehouse environments**: System MUST implement noise reduction algorithms and voice activity detection to filter background noise. System MUST provide visual feedback (transcription display) so users can verify their input was captured correctly. System MUST support configurable sensitivity settings for microphone input. System MUST allow users to manually correct transcriptions if voice recognition fails. System MUST provide push-to-talk functionality to reduce false activations from background noise.
+
+- **Approved purchase orders that suppliers cannot fulfill**: System MUST support purchase order status updates including "partially fulfilled" and "cancelled by supplier". When a supplier indicates they cannot fulfill an order, the system MUST allow inventory managers to cancel or modify the purchase order. System MUST automatically recalculate inventory forecasts and generate new recommendations if approved orders are cancelled. System MUST track supplier performance metrics including fulfillment rates and update supplier profiles accordingly. System MUST alert inventory managers when purchase orders are not fulfilled within expected timeframes.
+
+- **Inventory movements during system maintenance windows**: System MUST support scheduled maintenance windows with advance notification to users. System MUST provide a read-only mode during maintenance that allows viewing inventory but prevents movements. System MUST queue inventory movements submitted just before maintenance and process them after maintenance completes. System MUST maintain complete audit trails even during maintenance periods. System MUST provide estimated maintenance duration and notify users when normal operations resume.
 
 ## Requirements *(mandatory)*
 

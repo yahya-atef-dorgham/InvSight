@@ -1,0 +1,1061 @@
+openapi: 3.0.3
+info:
+  title: Inventory Management System API
+  description: |
+    RESTful API for AI-powered inventory management with voice interaction capabilities.
+    Multi-tenant, role-based access control, real-time updates.
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+tags:
+  - name: Products
+    description: Product catalog management
+  - name: Inventory
+    description: Inventory tracking and movements
+  - name: Warehouses
+    description: Warehouse management
+  - name: Purchase Orders
+    description: Purchase order lifecycle
+  - name: Suppliers
+    description: Supplier management
+  - name: Forecasts
+    description: AI-powered demand forecasts
+  - name: Recommendations
+    description: AI recommendations for reordering
+  - name: Voice
+    description: Voice assistant queries
+  - name: Search
+    description: Global search across entities
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token with tenant_id and user roles
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    Product:
+      type: object
+      required:
+        - sku
+        - name
+        - unit_of_measure
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        sku:
+          type: string
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        category:
+          type: string
+          maxLength: 100
+        unit_of_measure:
+          type: string
+          enum: [pieces, kg, liters, meters, boxes]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Warehouse:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 255
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        postal_code:
+          type: string
+        capacity_total:
+          type: number
+          format: double
+        capacity_unit:
+          type: string
+        is_active:
+          type: boolean
+          default: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Inventory:
+      type: object
+      required:
+        - product_id
+        - warehouse_id
+        - quantity
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        warehouse_id:
+          type: string
+          format: uuid
+        quantity:
+          type: number
+          format: double
+          minimum: 0
+        reserved_quantity:
+          type: number
+          format: double
+          minimum: 0
+        minimum_stock:
+          type: number
+          format: double
+        safety_stock:
+          type: number
+          format: double
+        reorder_point:
+          type: number
+          format: double
+        last_movement_at:
+          type: string
+          format: date-time
+        last_updated_at:
+          type: string
+          format: date-time
+        product:
+          $ref: '#/components/schemas/Product'
+        warehouse:
+          $ref: '#/components/schemas/Warehouse'
+
+    InventoryMovement:
+      type: object
+      required:
+        - movement_type
+        - product_id
+        - quantity
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        movement_type:
+          type: string
+          enum: [inbound, outbound, transfer]
+        product_id:
+          type: string
+          format: uuid
+        source_warehouse_id:
+          type: string
+          format: uuid
+          nullable: true
+        destination_warehouse_id:
+          type: string
+          format: uuid
+          nullable: true
+        quantity:
+          type: number
+          format: double
+          minimum: 0.001
+        quantity_before:
+          type: number
+          format: double
+        quantity_after:
+          type: number
+          format: double
+        reference_number:
+          type: string
+          maxLength: 100
+        notes:
+          type: string
+        performed_by:
+          type: string
+          format: uuid
+        performed_at:
+          type: string
+          format: date-time
+
+    MovementRequest:
+      type: object
+      required:
+        - movement_type
+        - product_id
+        - quantity
+      properties:
+        movement_type:
+          type: string
+          enum: [inbound, outbound, transfer]
+        product_id:
+          type: string
+          format: uuid
+        source_warehouse_id:
+          type: string
+          format: uuid
+          nullable: true
+        destination_warehouse_id:
+          type: string
+          format: uuid
+          nullable: true
+        quantity:
+          type: number
+          format: double
+          minimum: 0.001
+        reference_number:
+          type: string
+        notes:
+          type: string
+
+    Supplier:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          maxLength: 255
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+        address:
+          type: string
+        payment_terms:
+          type: string
+        is_active:
+          type: boolean
+          default: true
+        performance_score:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+
+    PurchaseOrder:
+      type: object
+      required:
+        - order_number
+        - supplier_id
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        order_number:
+          type: string
+          maxLength: 100
+        supplier_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [draft, approved, sent, partially_received, received, cancelled]
+        total_amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          default: USD
+        expected_delivery_date:
+          type: string
+          format: date
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PurchaseOrderItem'
+        created_at:
+          type: string
+          format: date-time
+        approved_at:
+          type: string
+          format: date-time
+
+    PurchaseOrderItem:
+      type: object
+      required:
+        - product_id
+        - quantity
+        - unit_cost
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        warehouse_id:
+          type: string
+          format: uuid
+        quantity:
+          type: number
+          format: double
+          minimum: 0.001
+        unit_cost:
+          type: number
+          format: double
+          minimum: 0
+        total_cost:
+          type: number
+          format: double
+        received_quantity:
+          type: number
+          format: double
+          default: 0
+
+    Forecast:
+      type: object
+      required:
+        - product_id
+        - warehouse_id
+        - forecast_horizon_days
+        - forecast_date
+        - predicted_demand
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        warehouse_id:
+          type: string
+          format: uuid
+        forecast_horizon_days:
+          type: integer
+          enum: [7, 30, 90]
+        forecast_date:
+          type: string
+          format: date
+        predicted_demand:
+          type: number
+          format: double
+        confidence_lower:
+          type: number
+          format: double
+        confidence_upper:
+          type: number
+          format: double
+        confidence_level:
+          type: number
+          format: double
+        model_version:
+          type: string
+        generated_at:
+          type: string
+          format: date-time
+
+    Recommendation:
+      type: object
+      required:
+        - recommendation_type
+        - product_id
+        - warehouse_id
+        - recommended_value
+      properties:
+        id:
+          type: string
+          format: uuid
+        recommendation_type:
+          type: string
+          enum: [reorder_point, reorder_quantity, purchase_order]
+        product_id:
+          type: string
+          format: uuid
+        warehouse_id:
+          type: string
+          format: uuid
+        recommended_value:
+          type: number
+          format: double
+        current_value:
+          type: number
+          format: double
+        urgency_score:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        confidence_score:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        explanation:
+          type: string
+        status:
+          type: string
+          enum: [active, approved, rejected, superseded]
+        created_at:
+          type: string
+          format: date-time
+
+    VoiceQueryRequest:
+      type: object
+      required:
+        - query_text
+      properties:
+        query_text:
+          type: string
+          description: Transcribed or typed query text
+        audio_url:
+          type: string
+          format: uri
+          description: URL to audio file if voice query
+        interaction_type:
+          type: string
+          enum: [voice, text]
+          default: text
+
+    VoiceQueryResponse:
+      type: object
+      required:
+        - response_text
+      properties:
+        response_text:
+          type: string
+        response_audio_url:
+          type: string
+          format: uri
+        intent:
+          type: string
+        entities:
+          type: object
+        processing_duration_ms:
+          type: integer
+        confidence_score:
+          type: number
+          format: double
+
+    SearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 1
+        entity_types:
+          type: array
+          items:
+            type: string
+            enum: [products, inventory, warehouses, purchase_orders]
+        limit:
+          type: integer
+          default: 50
+          maximum: 100
+
+    SearchResult:
+      type: object
+      properties:
+        entity_type:
+          type: string
+        entity_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subtitle:
+          type: string
+        relevance_score:
+          type: number
+          format: double
+
+paths:
+  /products:
+    get:
+      tags: [Products]
+      summary: List products
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 1000
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+    post:
+      tags: [Products]
+      summary: Create product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /products/{product_id}:
+    get:
+      tags: [Products]
+      summary: Get product by ID
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Products]
+      summary: Update product
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Products]
+      summary: Delete product
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Product deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /inventory:
+    get:
+      tags: [Inventory]
+      summary: List inventory
+      parameters:
+        - name: product_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: warehouse_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: low_stock
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of inventory records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory'
+                  total:
+                    type: integer
+
+  /inventory/movement:
+    post:
+      tags: [Inventory]
+      summary: Create inventory movement
+      description: Record inbound, outbound, or transfer movement. Validates stock availability for outbound/transfers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementRequest'
+      responses:
+        '201':
+          description: Movement created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryMovement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Concurrent update conflict or insufficient stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /inventory/movements:
+    get:
+      tags: [Inventory]
+      summary: List inventory movements
+      parameters:
+        - name: product_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: warehouse_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: movement_type
+          in: query
+          schema:
+            type: string
+            enum: [inbound, outbound, transfer]
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of movements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryMovement'
+
+  /warehouses:
+    get:
+      tags: [Warehouses]
+      summary: List warehouses
+      responses:
+        '200':
+          description: List of warehouses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Warehouse'
+    post:
+      tags: [Warehouses]
+      summary: Create warehouse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+      responses:
+        '201':
+          description: Warehouse created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+
+  /warehouses/{warehouse_id}:
+    get:
+      tags: [Warehouses]
+      summary: Get warehouse by ID
+      parameters:
+        - name: warehouse_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Warehouse details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+
+  /purchase-orders:
+    get:
+      tags: [Purchase Orders]
+      summary: List purchase orders
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, approved, sent, partially_received, received, cancelled]
+        - name: supplier_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of purchase orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PurchaseOrder'
+    post:
+      tags: [Purchase Orders]
+      summary: Create purchase order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+      responses:
+        '201':
+          description: Purchase order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+
+  /purchase-orders/{purchase_order_id}:
+    get:
+      tags: [Purchase Orders]
+      summary: Get purchase order by ID
+      parameters:
+        - name: purchase_order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Purchase order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseOrder'
+    put:
+      tags: [Purchase Orders]
+      summary: Update purchase order
+      parameters:
+        - name: purchase_order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseOrder'
+      responses:
+        '200':
+          description: Purchase order updated
+
+  /purchase-orders/{purchase_order_id}/approve:
+    post:
+      tags: [Purchase Orders]
+      summary: Approve purchase order
+      description: Requires Inventory Manager role
+      parameters:
+        - name: purchase_order_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Purchase order approved
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /forecast:
+    get:
+      tags: [Forecasts]
+      summary: Get demand forecasts
+      parameters:
+        - name: product_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: warehouse_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: horizon_days
+          in: query
+          schema:
+            type: integer
+            enum: [7, 30, 90]
+      responses:
+        '200':
+          description: List of forecasts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Forecast'
+
+  /recommendations:
+    get:
+      tags: [Recommendations]
+      summary: Get AI recommendations
+      parameters:
+        - name: recommendation_type
+          in: query
+          schema:
+            type: string
+            enum: [reorder_point, reorder_quantity, purchase_order]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, approved, rejected]
+        - name: min_urgency
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+      responses:
+        '200':
+          description: List of recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recommendation'
+
+  /recommendations/{recommendation_id}/explanation:
+    get:
+      tags: [Recommendations]
+      summary: Get detailed explanation for recommendation
+      parameters:
+        - name: recommendation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detailed explanation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  explanation:
+                    type: string
+                  features:
+                    type: object
+                  confidence_breakdown:
+                    type: object
+
+  /ai/voice/query:
+    post:
+      tags: [Voice]
+      summary: Process voice or text query
+      description: Processes inventory-related queries via voice or text. Returns both text and audio response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoiceQueryRequest'
+      responses:
+        '200':
+          description: Query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceQueryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /search:
+    post:
+      tags: [Search]
+      summary: Global search across entities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict - resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+

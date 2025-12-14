@@ -1,0 +1,127 @@
+.recommendation-detail {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.close-button:hover {
+  background: #f3f4f6;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.detail-value.status-active {
+  color: #1e40af;
+}
+
+.detail-value.status-approved {
+  color: #065f46;
+}
+
+.detail-value.status-rejected {
+  color: #991b1b;
+}
+
+.detail-value.urgency-high {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.explanation-text {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.analysis-content {
+  background: #f9fafb;
+  border-radius: 4px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.analysis-content pre {
+  margin: 0;
+  font-size: 12px;
+  color: #374151;
+  font-family: 'Courier New', monospace;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}

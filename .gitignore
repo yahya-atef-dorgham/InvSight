@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+build/
+.next/
+out/
+.npm
+.eslintcache
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Testing
+coverage/
+.nyc_output/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+docker-compose.override.yml
+
+# Docker volumes
+postgres_data/
+redis_data/
+
+# Logs
+*.log
+backend.log
+ai-service.log
+voice-service.log
+frontend.log
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt
+
+# IDE
+.cursor/
+.specify/
+

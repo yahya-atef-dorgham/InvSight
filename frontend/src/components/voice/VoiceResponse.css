@@ -1,0 +1,35 @@
+.voice-response {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f0f9ff;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+.response-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.response-text {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+  color: #1e40af;
+  line-height: 1.6;
+}
+
+.play-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.play-button:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
