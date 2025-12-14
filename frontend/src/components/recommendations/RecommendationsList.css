@@ -1,0 +1,159 @@
+.recommendations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.recommendation-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.recommendation-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.recommendation-card.urgency-high {
+  border-left: 4px solid #ef4444;
+}
+
+.recommendation-card.urgency-medium {
+  border-left: 4px solid #f59e0b;
+}
+
+.recommendation-card.urgency-low {
+  border-left: 4px solid #10b981;
+}
+
+.recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.recommendation-type {
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recommendation-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-active {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-superseded {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.recommendation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendation-values {
+  display: flex;
+  gap: 24px;
+}
+
+.value-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.value-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value-number {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.recommendation-explanation {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 4px;
+}
+
+.recommendation-scores {
+  display: flex;
+  gap: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.score-value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.score-value.urgency-high {
+  color: #ef4444;
+}
+
+.score-value.urgency-medium {
+  color: #f59e0b;
+}
+
+.score-value.urgency-low {
+  color: #10b981;
+}
+
+.recommendations-loading,
+.recommendations-empty {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  font-size: 16px;
+}

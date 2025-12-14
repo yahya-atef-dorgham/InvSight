@@ -1,0 +1,72 @@
+.movement-history {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.movement-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.movement-table thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.movement-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.movement-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.movement-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.movement-type-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.type-inbound {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.type-outbound {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.type-transfer {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.movement-history-loading,
+.movement-history-empty {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  font-size: 16px;
+}
